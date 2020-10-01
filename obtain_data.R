@@ -122,7 +122,7 @@ data$REF_DATE<-parse_integer(data$REF_DATE)
 names_to_rm<-c(3,6:9,11:20)
 colnames(data)[names_to_rm]
 
-data %>%
+data<-data %>%
   select(-colnames(data)[names_to_rm]) %>%
   filter(Prices=="Chained (2012) dollars",Estimates=="Gross domestic product at market prices") 
 
@@ -144,6 +144,7 @@ roc_gdp<-data %>%
 
 gdp<-bind_rows(roc_gdp,atl_gdp)
 
+
 #Get Greenhouse Gas Emissions Data from Environment Canada
 ghg_data<-read_csv("http://donnees.ec.gc.ca/data/substances/monitor/canada-s-official-greenhouse-gas-inventory/GHG_IPCC_Can_Prov_Terr.csv")
 
@@ -163,5 +164,6 @@ ghg_data2<-ghg_data %>%
 
 #next step is combining the tibbles by (Year,GEO)
 
-
-
+full_data<-gdp %>%
+  left_join(ghg_data2,by=c("Year","GEO")) %>%
+  left_join(energy_dta,by=c("Year","GEO"))
